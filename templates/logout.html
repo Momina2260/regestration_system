@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>logout</title>
+    <style>  
+     body {
+             background-image: url("{{ url_for('static', filename='BG4.jpg') }}"); /* Make sure BG.jpg is in the same folder as this HTML file */
+             background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 100%,100%;
+            min-height: 100vh; 
+            align-items:flex-start;
+            padding: 40px;
+        }
+        h1{
+            color: aliceblue;
+            font-family: Arial, Helvetica, sans-serif;
+            
+     
+        }
+        input[type="submit"] {
+            margin-top: 30px;
+        
+            text-align: center;
+            
+            padding: 8px;
+            background-color: steelblue;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: royalblue;
+        }
+
+        </style>
+</head>
+<body>
+<h1>you loged out sucessfully! {{name}}</h1>
+<div>
+<a href="/login">    <input type="submit" value="login" ></a>
+</div>
+</body>
+</html>
