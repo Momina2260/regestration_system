@@ -1,0 +1,6 @@
+<h1>All Users (Admin)</h1>
+<ul>
+{% for u in users %}
+  <li>{{ u.user_id }} - {{ u.name }} ({{ u.email }}) - {{ u.role }}</li>
+{% endfor %}
+</ul>

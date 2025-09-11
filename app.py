@@ -25,7 +25,6 @@ def get_tables():
     con.close()
     return str(tables)
 
-
 # Register route
 @app.route("/home", methods=["GET", "POST"])
 def register():
@@ -38,25 +37,37 @@ def register():
         if confirm != password:
             return "Password does not match, try again!"
 
-        # Hash the password before saving
         hashed_password = generate_password_hash(password)
 
-        # Save user into DB
+        # DB connection
         con = get_db_connection()
         cursor = con.cursor()
-        cursor.execute("INSERT INTO users (name, email, password) VALUES (%s, %s, %s)",
-                       (name, email, hashed_password))
+
+        # Check if email already exists
+        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+        existing_user = cursor.fetchone()
+        if existing_user:
+            cursor.close()
+            con.close()
+            return "This email is already registered. Please log in instead."
+
+        # Decide role
+        role = "user"
+        if email == "momina.uos@gmail.com":
+            role = "admin"
+
+        # Save new user
+        cursor.execute(
+            "INSERT INTO users (name, email, password, role) VALUES (%s, %s, %s, %s)",
+            (name, email, hashed_password, role)
+        )
         con.commit()
         cursor.close()
         con.close()
 
-        # Store name in session
-        session["name"] = name
-
         return redirect(url_for("login"))
 
     return render_template("home.html")
-
 
 # Login route
 @app.route("/login", methods=["GET", "POST"])
@@ -67,26 +78,83 @@ def login():
 
         con = get_db_connection()
         cursor = con.cursor()
-        cursor.execute("SELECT user_id, name, email, password FROM users WHERE email=%s", (email,))
+        cursor.execute(
+            "SELECT user_id, name, email, password, role FROM users WHERE email=%s LIMIT 1",
+            (email,)
+        )
         user = cursor.fetchone()
         cursor.close()
         con.close()
 
         if user and check_password_hash(user[3], password):
-            session["name"] = user[1]  # user[1] = name
+            session["user_id"] = user[0]
+            session["name"] = user[1]
+            session["role"] = user[4]
             return redirect(url_for("welcome"))
 
         return "Invalid credentials!"
 
     return render_template("login.html")
 
+@app.route("/delete_account", methods=["GET", "POST"])
+def delete_account():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        # Delete user
+        con = get_db_connection()
+        cursor = con.cursor()
+        cursor.execute("DELETE FROM users WHERE user_id=%s", (session["user_id"],))
+        con.commit()
+        cursor.close()
+        con.close()
+
+        session.clear()
+        return redirect(url_for("login"))  # redirect after deletion
+
+    # GET → show confirmation page
+    return render_template("delete_account.html")
 
 # Welcome route
 @app.route("/welcome")
 def welcome():
     name = session.get("name", "Guest")
-    return render_template("welcome.html", name=name)
+    role = session.get("role", "user")
+    return render_template("welcome.html", name=name, role=role)
 
+# Profile route (normal user only)
+@app.route("/profile")
+def profile():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    con = get_db_connection()
+    cursor = con.cursor(dictionary=True)
+    cursor.execute(
+        "SELECT user_id, name, email, role FROM users WHERE user_id=%s",
+        (session["user_id"],)
+    )
+    user = cursor.fetchone()
+    cursor.close()
+    con.close()
+
+    return render_template("profile.html", user=user)
+
+# Admin route (all users)
+@app.route("/users")
+def users_list():
+    if "role" not in session or session["role"] != "admin":
+        return "Access denied! Admins only."
+
+    con = get_db_connection()
+    cursor = con.cursor(dictionary=True)
+    cursor.execute("SELECT user_id, name, email, role FROM users")
+    users = cursor.fetchall()
+    cursor.close()
+    con.close()
+
+    return render_template("users.html", users=users)
 
 # Logout route
 @app.route("/logout")
@@ -94,7 +162,6 @@ def logout():
     name = session.get("name", "Guest")
     session.clear()
     return render_template("logout.html", name=name)
-
 
 if __name__ == "__main__":
     app.run(debug=True)

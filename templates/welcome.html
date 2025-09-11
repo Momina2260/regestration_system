@@ -1,49 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    
-    <title>welcome Page</title>
-    <style>
-          body {
-             background-image: url("{{ url_for('static', filename='BG3.jpg') }}"); /* Make sure BG.jpg is in the same folder as this HTML file */
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 100%,100%;
-            min-height: 100vh; 
-            align-items:flex-start;
-            padding: 40px;
-           
-        }
-        h1{
-            text-align: center;
-            color: rgb(44, 47, 44);
-            font-weight: bold;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        input[type="submit"] {
-            margin-top: 30px;
-            
-            text-align: center;
-            
-            padding: 8px;
-            background-color: steelblue;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-weight: bold;
-            border: solid black;
-        }
+<h1>Welcome {{ name }}</h1>
+<p>Your role: {{ role }}</p>
 
-        input[type="submit"]:hover {
-            background-color: royalblue;
-        }
+<a href="{{ url_for('profile') }}">My Profile</a><br>
 
-    </style>
-</head>
-<body>
-    <h1>welcome {{name}}</h1>
-<a href="/logout">    <input type="submit" value="logout"></a>
-</body>
-</html>
+{% if role == "admin" %}
+  <a href="{{ url_for('users_list') }}">See All Users (Admin)</a><br>
+{% endif %}
+
+<a href="{{ url_for('logout') }}">Logout</a>
