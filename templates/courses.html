@@ -1,0 +1,6 @@
+<h1>My Courses</h1>
+<ul>
+{% for course in courses %}
+  <li>{{ course.title }} - {{ course.author }} ({{ course.enrollment_date }})</li>
+{% endfor %}
+</ul>

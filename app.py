@@ -162,6 +162,64 @@ def logout():
     name = session.get("name", "Guest")
     session.clear()
     return render_template("logout.html", name=name)
+@app.route("/enroll")
+def enroll():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    course_id = request.args.get("course_id")
+    if not course_id:
+        return "No course selected!"
+
+    con = get_db_connection()
+    cursor = con.cursor()
+
+    # Prevent duplicate enrollment
+    cursor.execute(
+        "SELECT * FROM Enrollment WHERE user_id=%s AND course_id=%s",
+        (session["user_id"], course_id)
+    )
+    existing = cursor.fetchone()
+
+    if existing:
+        cursor.close()
+        con.close()
+        return "You are already enrolled in this course!"
+
+    # Insert new enrollment
+    cursor.execute(
+        "INSERT INTO Enrollment (user_id, course_id, enrollment_date) VALUES (%s, %s, CURDATE())",
+        (session["user_id"], course_id)
+    )
+    con.commit()
+
+    cursor.close()
+    con.close()
+    return redirect(url_for("courses"))  # redirect to my courses
+
+
+@app.route("/courses") 
+def courses():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    con = get_db_connection()
+    cursor = con.cursor(dictionary=True)
+    cursor.execute(
+        """
+        SELECT c.title, c.author, e.enrollment_date
+        FROM Enrollment e
+        JOIN courses c ON e.course_id = c.course_id
+        WHERE e.user_id = %s
+        """,
+        (session["user_id"],)
+    )
+    courses = cursor.fetchall()
+    cursor.close()
+    con.close()
+
+    return render_template("courses.html", courses=courses)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
