@@ -83,16 +83,21 @@ def login():
             (email,)
         )
         user = cursor.fetchone()
-        cursor.close()
-        con.close()
-
         if user and check_password_hash(user[3], password):
             session["user_id"] = user[0]
             session["name"] = user[1]
             session["role"] = user[4]
             return redirect(url_for("welcome"))
+            
+            cursor.execute("UPDATE users SET name=name where user_id=%s,(user[0],)"
 
+            )
+        cursor.close()
+        con.close()
+
+       
         return "Invalid credentials!"
+       
 
     return render_template("login.html")
 
@@ -136,6 +141,7 @@ def profile():
         (session["user_id"],)
     )
     user = cursor.fetchone()
+    cursor.execute("SELECT user_id,name,email,last_login FROM users where user_id=%s",(session["user_id"],))
     cursor.close()
     con.close()
 
