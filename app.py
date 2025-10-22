@@ -236,6 +236,9 @@ def open_course(course_id):
     con.close()
 
     return render_template("course_detail.html", course=course)
+# Helper to check admin access
+def is_admin():
+    return "role" in session and session["role"] == "admin"
 @app.route("/admin")#admin dashborad
 def admin_dashboard():
     if not is_admin():
