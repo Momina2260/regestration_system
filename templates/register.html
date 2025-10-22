@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>login Page</title>
+    <title>Home Page</title>
     <style>
         html, body {
             height: 100%; /* ensure both html and body fill the viewport */
@@ -9,7 +9,7 @@
         }
 
         body {
-             background-image: url("{{ url_for('static', filename='BG2.jpg') }}"); /* Make sure BG.jpg is in the same folder as this HTML file */
+            background-image: url("{{ url_for('static', filename='BG.jpg') }}"); /* Make sure BG.jpg is in the same folder as this HTML file */
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
@@ -34,7 +34,7 @@
             margin-top: 10px;
         }
 
-        input[type="text"], input[type="email"], input[type="password"] {
+        input[type="text"], input[type="email"], input[type="password"],input[type="confirm_pasword"] {
             width: 100%;
             padding: 8px;
             color: rgb(50, 48, 48);
@@ -56,6 +56,7 @@
             border: none;
             border-radius: 3px;
             cursor: pointer;
+              display: inline-block;
         }
 
         input[type="submit"]:hover {
@@ -95,15 +96,27 @@
        .navbar a:hover{
          color:blue ;
        }
-       
-        
+       .actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between; /* pushes buttons apart */
+    gap: 10px; /* space between buttons */
+}
+
+.actions input[type="submit"] {
+    flex: 1; /* makes both buttons same width */
+}
+
     </style>
 </head>
 <body>
+    
     <div class="hd"><header>
         <nav class="navbar">
             <div>
-                <ul><li><a href="">home</a></li>
+                <ul>  <li class="dropdown">
+                      <a href="">courses</a>
+                      </li>
                     <li><a href="">about</a></li>
                    <li class="dropdown">
                 <a href="">Services</a>
@@ -113,27 +126,33 @@
         </nav>
     </header></div>
     
-    <fieldset>
-        <form action="" , method="POST">
-            <div class="name"><label for="name">Name</label>
+   <fieldset>
+    <form action="{{ url_for('register') }}" , method="POST">
+        <div class="name"><label for="name">name</label>
             <input type="text" id="name" name="name" placeholder="Please enter your name...">
-         </div>
-           <div clas="email"> <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Please enter your email..."></div>
-
-            <div class="password">
-                <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Please enter your password...">
-       
         </div>
-         
+        <div class="email">
+            <label for="email">email</label>
+            <input type="email" id="email" name="email" placeholder="Please enter your email...">
+        </div>
+        <div class="password">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Please enter your password...">
+        </div>
+        <div class="confirm_password">
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm-password" name="confirm_password" placeholder="Please confirm your password...">
+        </div>
 
-        <div class="login">   
-             <input type="submit" value="login">
-            </div>
-        </form>
-    </fieldset>
+        <!-- Both buttons side by side -->
+        <div class="actions">
+            <input type="submit" name ="action" value="Register">
+            
+        </div>
+    </form>
+</fieldset>
+
     
-    <div class="ft"><footer>© 2025 CourseCloud | Made with 💙 by Momina</footer></div>
+    <div class="ft"><footer>@2025, a learning web application</footer></div>
 </body>
 </html>

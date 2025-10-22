@@ -13,20 +13,12 @@ def get_db_connection():
         password="Root@2003",
         database="mydatabase"
     )
-
-# Route to show available tables (for testing DB connection)
-@app.route("/getTables", methods=['GET'])
-def get_tables():
-    con = get_db_connection()
-    cursor = con.cursor()
-    cursor.execute("SHOW TABLES;")
-    tables = cursor.fetchall()
-    cursor.close()
-    con.close()
-    return str(tables)
+@app.route("/home")
+def home():
+    return render_template("home.html")
 
 # Register route
-@app.route("/home", methods=["GET", "POST"])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         name = request.form.get("name")
@@ -67,7 +59,7 @@ def register():
 
         return redirect(url_for("login"))
 
-    return render_template("home.html")
+    return render_template("register.html")
 
 # Login route
 @app.route("/login", methods=["GET", "POST"])
@@ -88,10 +80,8 @@ def login():
             session["name"] = user[1]
             session["role"] = user[4]
             return redirect(url_for("welcome"))
-            
-            cursor.execute("UPDATE users SET name=name where user_id=%s,(user[0],)"
-
-            )
+            cursor.execute("UPDATE users SET last_login = NOW() WHERE user_id = %s", (user[0],))
+            con.commit()
         cursor.close()
         con.close()
 
@@ -137,11 +127,10 @@ def profile():
     con = get_db_connection()
     cursor = con.cursor(dictionary=True)
     cursor.execute(
-        "SELECT user_id, name, email, role FROM users WHERE user_id=%s",
+        "SELECT user_id, name, email, last_login FROM users WHERE user_id = %s",
         (session["user_id"],)
     )
     user = cursor.fetchone()
-    cursor.execute("SELECT user_id,name,email,last_login FROM users where user_id=%s",(session["user_id"],))
     cursor.close()
     con.close()
 
@@ -155,7 +144,7 @@ def users_list():
 
     con = get_db_connection()
     cursor = con.cursor(dictionary=True)
-    cursor.execute("SELECT user_id, name, email, role FROM users")
+    cursor.execute("SELECT user_id, name, email FROM users")
     users = cursor.fetchall()
     cursor.close()
     con.close()
@@ -168,50 +157,56 @@ def logout():
     name = session.get("name", "Guest")
     session.clear()
     return render_template("logout.html", name=name)
-@app.route("/enroll")
-def enroll():
+@app.route("/enroll/<int:course_id>", methods=["GET", "POST"])
+def enroll(course_id):
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    course_id = request.args.get("course_id")
-    if not course_id:
-        return "No course selected!"
-    try:
-      con = get_db_connection()
-      cursor = con.cursor()
+    con = get_db_connection()
+    cursor = con.cursor(dictionary=True)
 
-       # Prevent duplicate enrollment
-      cursor.execute(
-        "SELECT * FROM Enrollment WHERE user_id=%s AND course_id=%s",
-        (session["user_id"], course_id)
-      )
-      existing = cursor.fetchone()
+    # Fetch course info for display
+    cursor.execute("SELECT * FROM courses WHERE course_id = %s", (course_id,))
+    course = cursor.fetchone()
 
-      if existing:
+    if not course:
         cursor.close()
         con.close()
-        return "You are already enrolled in this course!"
+        return "Course not found."
 
-    # Insert new enrollment
-      cursor.execute(
-        "INSERT INTO Enrollment (user_id, course_id, enrollment_date) VALUES (%s, %s, CURDATE())",
-        (session["user_id"], course_id)
+    # Handle POST request (form submission)
+    if request.method == "POST":
+        name = request.form.get("name")
+        email = request.form.get("email")
+
+        # Check if already enrolled
+        cursor.execute(
+            "SELECT * FROM Enrollment WHERE user_id = %s AND course_id = %s",
+            (session["user_id"], course_id)
         )
-    
-    except IntegrityError:
-        # Triggered if UNIQUE constraint (user_id, course_id) is violated
-     return "You are already enrolled in this course!"
+        enrollment = cursor.fetchone()
 
-    except Error as e:
-        # Handles any other database errors
-        return f"Database error: {e}"
+        if enrollment:
+            cursor.close()
+            con.close()
+            return "You are already enrolled in this course."
 
-    finally:
-      con.commit()
+        # Insert new enrollment record
+        cursor.execute(
+            "INSERT INTO Enrollment (user_id, course_id, enrollment_date) VALUES (%s, %s, CURDATE())",
+            (session["user_id"], course_id)
+        )
+        con.commit()
 
-      cursor.close()
-      con.close()
-    return redirect(url_for("courses"))  # redirect to my courses
+        cursor.close()
+        con.close()
+
+        return "Enrollment successful!"
+
+    # Handle GET request (show confirmation form)
+    cursor.close()
+    con.close()
+    return render_template("confirm_enroll.html", course=course)
 
 
 @app.route("/courses") 
@@ -221,20 +216,53 @@ def courses():
 
     con = get_db_connection()
     cursor = con.cursor(dictionary=True)
-    cursor.execute(
-        """
-        SELECT c.title, c.author, e.enrollment_date
-        FROM Enrollment e
-        JOIN courses c ON e.course_id = c.course_id
-        WHERE e.user_id = %s
-        """,
-        (session["user_id"],)
-    )
+
+    # Fetch ALL available courses 
+    cursor.execute("SELECT course_id, title, author, description FROM courses")
     courses = cursor.fetchall()
+
     cursor.close()
     con.close()
 
     return render_template("courses.html", courses=courses)
+
+@app.route("/course/<int:course_id>")
+def open_course(course_id):
+    con = get_db_connection()
+    cursor = con.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM courses WHERE course_id = %s", (course_id,))
+    course = cursor.fetchone()
+    cursor.close()
+    con.close()
+
+    return render_template("course_detail.html", course=course)
+@app.route("/admin")#admin dashborad
+def admin_dashboard():
+    if not is_admin():
+        return redirect(url_for("login"))
+    
+    con = get_db_connection()
+    cursor = con.cursor(dictionary=True)
+
+    # Basic stats
+    cursor.execute("SELECT COUNT(*) AS total_users FROM users")
+    total_users = cursor.fetchone()["total_users"]
+
+    cursor.execute("SELECT COUNT(*) AS total_courses FROM courses")
+    total_courses = cursor.fetchone()["total_courses"]
+
+    cursor.execute("SELECT COUNT(*) AS total_enrollments FROM enrollment")
+    total_enrollments = cursor.fetchone()["total_enrollments"]
+
+    cursor.close()
+    con.close()
+
+    return render_template(
+        "admin_dashboard.html",
+        total_users=total_users,
+        total_courses=total_courses,
+        total_enrollments=total_enrollments
+    )
 
 
 if __name__ == "__main__":

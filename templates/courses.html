@@ -1,6 +1,56 @@
-<h1>My Courses</h1>
-<ul>
-{% for course in courses %}
-  <li>{{ course.title }} - {{ course.author }} ({{ course.enrollment_date }})</li>
-{% endfor %}
-</ul>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Courses Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            text-align: center;
+        }
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+        .course {
+            border-bottom: 1px solid #ddd;
+            padding: 15px;
+        }
+        .course:last-child {
+            border-bottom: none;
+        }
+        .course a {
+            text-decoration: none;
+            color: #333;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .course a:hover {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>All Courses</h2>
+
+    {% for course in courses %}
+        <div class="course">
+            <a href="{{ url_for('enroll', course_id=course.course_id) }}">
+                {{ course.title }}
+            </a>
+            <p>Author: {{ course.author }}</p>
+        </div>
+    {% else %}
+        <p>No courses available yet.</p>
+    {% endfor %}
+</div>
+
+</body>
+</html>

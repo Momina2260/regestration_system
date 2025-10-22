@@ -1,156 +1,137 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <title>Home Page</title>
-    <style>
-        html, body {
-            height: 100%; /* ensure both html and body fill the viewport */
-            margin: 0;
-        }
+  <title>CourseCloud - Home</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8fafc;
+      margin: 0;
+      padding: 0;
+    }
 
-        body {
-            background-image: url("{{ url_for('static', filename='BG.jpg') }}"); /* Make sure BG.jpg is in the same folder as this HTML file */
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 100%,100%;
-            display: flex;
-            flex-direction: column; /* stack header, form, footer vertically */
-            justify-content: space-between; /* push header to top, footer to bottom */
-            align-items:flex-end;
-            padding: 40px;
-        }
+    header {
+      background-color: #2563eb;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
 
-        fieldset {
-            width: 300px;
-            height: auto;
-            padding: 10px;
-            border-radius: 10px;
-            background-color: rgba(255,255,255,0.8); /* optional for readability */
-        }
+    .welcome {
+      text-align: center;
+      margin: 40px 0;
+    }
 
-        label {
-            display: block;
-            margin-top: 10px;
-        }
+    .welcome h2 {
+      color: #1e3a8a;
+      font-size: 28px;
+    }
 
-        input[type="text"], input[type="email"], input[type="password"],input[type="confirm_pasword"] {
-            width: 100%;
-            padding: 8px;
-            color: rgb(50, 48, 48);
-            background-color: gainsboro;
-            border: none;
-            border-radius: 3px;
-            box-sizing: border-box;
-            border-bottom: 2px solid dimgray;
-        }
+    .welcome p {
+      color: #475569;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
 
-        input[type="submit"] {
-            margin-top: 30px;
-            width: 100%;
-            text-align: center;
-            
-            padding: 8px;
-            background-color: steelblue;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-              display: inline-block;
-        }
+    .buttons a {
+      text-decoration: none;
+      background-color: #2563eb;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 8px;
+      margin: 10px;
+      font-weight: bold;
+    }
 
-        input[type="submit"]:hover {
-            background-color: royalblue;
-        }
+    .buttons a:hover {
+      background-color: #1e40af;
+    }
 
-        header, footer {
-            text-align: center;
-            background-color: dimgray;
-            color: white;
-            padding: 5px;
-            border-radius: 3px;
-            width: 100%;
-        }
-        .ft,.hd{
-            width:100%;
-        }
-        .navbar{
-       
-             display: flex;
-            justify-content: flex-start;
+    .courses {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 40px auto;
+      max-width: 900px;
+    }
 
-        }
-        .navbar ul{
-            list-style:none;
-            text-align: center;
-            display: flex;
-            padding:0;
-            margin: 0;
-            gap: 10px;
-        }
-       .navbar a{
-        color: white;
-        text-decoration: none;
-        font-weight: bold;
-       }
-       .navbar a:hover{
-         color:blue ;
-       }
-       .actions {
-    margin-top: 30px;
-    display: flex;
-    justify-content: space-between; /* pushes buttons apart */
-    gap: 10px; /* space between buttons */
-}
+    .card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      width: 250px;
+      text-align: center;
+      padding: 20px;
+      transition: transform 0.2s;
+    }
 
-.actions input[type="submit"] {
-    flex: 1; /* makes both buttons same width */
-}
+    .card:hover {
+      transform: translateY(-5px);
+    }
 
-    </style>
+    .card a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .card h3 {
+      color: #1e3a8a;
+    }
+
+    .card p {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    footer {
+      background-color: #f1f5f9;
+      text-align: center;
+      padding: 15px 0;
+      color: #475569;
+      margin-top: 30px;
+    }
+  </style>
 </head>
 <body>
-    
-    <div class="hd"><header>
-        <nav class="navbar">
-            <div>
-                <ul><li><a href="">home</a></li>
-                    <li><a href="">about</a></li>
-                   <li class="dropdown">
-                <a href="">Services</a>
-            </li>
-            </ul>
-            </div>
-        </nav>
-    </header></div>
-    
-   <fieldset>
-    <form action="{{ url_for('register') }}" , method="POST">
-        <div class="name"><label for="name">name</label>
-            <input type="text" id="name" name="name" placeholder="Please enter your name...">
-        </div>
-        <div class="email">
-            <label for="email">email</label>
-            <input type="email" id="email" name="email" placeholder="Please enter your email...">
-        </div>
-        <div class="password">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Please enter your password...">
-        </div>
-        <div class="confirm_password">
-            <label for="confirm-password">Confirm Password</label>
-            <input type="password" id="confirm-password" name="confirm_password" placeholder="Please confirm your password...">
-        </div>
 
-        <!-- Both buttons side by side -->
-        <div class="actions">
-            <input type="submit" name ="action" value="Register">
-            
-        </div>
-    </form>
-</fieldset>
+  <header>🌩️ CourseCloud</header>
 
-    
-    <div class="ft"><footer>@2025, a learning web application</footer></div>
+  <div class="welcome">
+    <h2>Learn Anything. Anywhere. Anytime.</h2>
+    <p>Join thousands of learners building their future with CourseCloud.</p>
+    <div class="buttons">
+      <a href="/register">Register</a>
+      <a href="/login">Login</a>
+      <a href="/courses">View All Courses</a>
+    </div>
+  </div>
+
+  <div class="courses">
+    <div class="card">
+      <a href="/course/1">
+        <h3>📘 Math 101</h3>
+        <p>Introduction to Mathematics and basic problem-solving.</p>
+      </a>
+    </div>
+    <div class="card">
+      <a href="/course/2">
+        <h3>👩‍💻 Python Programming</h3>
+        <p>Learn Python step-by-step and build cool projects.</p>
+      </a>
+    </div>
+    <div class="card">
+      <a href="/course/3">
+        <h3>🌍 History 101</h3>
+        <p>Discover world history and understand key events.</p>
+      </a>
+    </div>
+  </div>
+
+  <footer>© 2025 CourseCloud | Made with 💙 by Momina</footer>
+
 </body>
 </html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ course.title }} - Course Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .author {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            color: #444;
+            font-size: 16px;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .buttons {
+            margin-top: 30px;
+        }
+
+        .enroll-btn, .back-btn {
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+
+        .enroll-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .back-btn {
+            background-color: #6c757d;
+        }
+
+        .back-btn:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ course.title }}</h1>
+        <p class="author">By {{ course.author }}</p>
+        <div class="description">
+            <p>{{ course.description }}</p>
+        </div>
+
+        <div class="buttons">
+            <!--  This is the correct URL for enrolling -->
+            <a href="{{ url_for('open_course', course_id=course.course_id) }}" class="enroll-btn">Enroll in Course</a>
+            <a href="{{ url_for('courses') }}" class="back-btn">Back to Courses</a>
+        </div>
+    </div>
+</body>
+</html>

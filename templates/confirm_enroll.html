@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Enrollment</title>
+</head>
+<body>
+    <h2>Confirm Enrollment</h2>
+    <p>You are about to enroll in: <strong>{{ course.course_name }}</strong></p>
+
+    <form method="POST">
+        <label>Name:</label><br>
+        <input type="text" name="name" required><br><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <button type="submit">Confirm Enrollment</button>
+    </form>
+
+    <br>
+    <a href="{{ url_for('courses') }}">Cancel</a>
+</body>
+</html>
