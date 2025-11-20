@@ -1,10 +1,11 @@
 <h1>Welcome {{ name }}</h1>
 <p>Your role: {{ role }}</p>
 
-<a href="{{ url_for('profile') }}">My Profile</a><br>
+<a href="{{ url_for('routes.profile') }}">My Profile</a><br>
 
 {% if role == "admin" %}
-  <a href="{{ url_for('users_list') }}">See All Users (Admin)</a><br>
+  <a href="{{ url_for('routes.users_list') }}">See All Users (Admin)</a><br>
 {% endif %}
 
-<a href="{{ url_for('logout') }}">Logout</a>
+<a href="{{ url_for('routes.logout') }}">Logout</a><br>
+ <a href="/courses">View All Courses</a>

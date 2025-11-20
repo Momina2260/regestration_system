@@ -1,41 +1,44 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Dashboard - CourseCloud</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f6ff;
-            text-align: center;
-        }
-        .card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px auto;
-            width: 250px;
-            box-shadow: 0 0 5px #ccc;
-        }
-    </style>
-</head>
-<body>
-    <h1>Welcome to Admin Dashboard</h1>
+<h2>Admin Dashboard</h2>
 
-    <div class="card">
-        <h3>Total Users</h3>
-        <p>{{ total_users }}</p>
-    </div>
+<p>Total Users: {{ total_users }}</p>
+<p>Total Courses: {{ total_courses }}</p>
+<p>Total Enrollments: {{ total_enrollments }}</p>
+<h3>Users</h3>
+<table border="1">
+    <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>last login</th></tr>
+    {% for user in users %}
+    <tr>
+        <td>{{ user.user_id }}</td>
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>{{ user.last_login }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
-    <div class="card">
-        <h3>Total Courses</h3>
-        <p>{{ total_courses }}</p>
-    </div>
+<h3>Courses</h3>
+<table border="1">
+    <tr><th>ID</th><th>Name</th><th>author</th><th>Description</th></tr>
+    {% for course in courses %}
+    <tr>
+        <td>{{ course.course_id }}</td>
+        <td>{{ course.title }}</td>
+        <td>{{ course.author}}</td>
+        <td>{{ course.description }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
-    <div class="card">
-        <h3>Total Enrollments</h3>
-        <p>{{ total_enrollments }}</p>
-    </div>
-
-    <a href="/logout">Logout</a>
-</body>
-</html>
+<h3>Enrollments</h3> 
+<table border="1">
+    <tr><th>Enrollment ID</th><th>Student</th><th>Course</th><th>Date</th></tr>
+    {% for enr in Enrollment %}
+    <tr>
+        <td>{{ enr.en_id }}</td>
+        <td>{{ enr.student_name }}</td>
+        <td>{{ enr.title}}</td>
+        <td>{{ enr.enrollment_date }}</td>
+    </tr>
+    {% endfor %}
+</table>

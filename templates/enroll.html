@@ -12,7 +12,7 @@
     <h4 class="text-primary mt-3">{{ course.title }}</h4>
     <p class="text-muted">Author: {{ course.author }}</p>
 
-    <a href="{{ url_for('open_course', course_id=course.course_id) }}" class="btn btn-success mt-4">
+    <a href="{{ url_for('routes.open_course', course_id=course.course_id) }}" class="btn btn-success mt-4">
         Open Course
     </a>
 </div>

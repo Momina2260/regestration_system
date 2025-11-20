@@ -104,27 +104,28 @@
     <h2>Learn Anything. Anywhere. Anytime.</h2>
     <p>Join thousands of learners building their future with CourseCloud.</p>
     <div class="buttons">
-      <a href="/register">Register</a>
-      <a href="/login">Login</a>
-      <a href="/courses">View All Courses</a>
+      <a href="{{ url_for('routes.register') }}">Register</a>
+      <a href="{{ url_for('routes.login') }}">Login</a>
+      <a href="{{ url_for('routes.courses') }}">View All Courses</a>
+
     </div>
   </div>
 
   <div class="courses">
     <div class="card">
-      <a href="/course/1">
+      <a href="url_for('routes.courses/1')">
         <h3>📘 Math 101</h3>
         <p>Introduction to Mathematics and basic problem-solving.</p>
       </a>
     </div>
     <div class="card">
-      <a href="/course/2">
+      <a href="url_for('routes.courses/2')">
         <h3>👩‍💻 Python Programming</h3>
         <p>Learn Python step-by-step and build cool projects.</p>
       </a>
     </div>
     <div class="card">
-      <a href="/course/3">
+      <a href="url_for('routes.courses/3')">
         <h3>🌍 History 101</h3>
         <p>Discover world history and understand key events.</p>
       </a>
