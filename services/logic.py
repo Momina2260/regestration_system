@@ -88,7 +88,7 @@ class Logic:
         return redirect(url_for("routes.login"))
 
     # ------------------ PROFILE --------------------
-    def get_profile(self):
+    def profile(self):
         con = self.get_db()
         cursor = con.cursor(dictionary=True)
         cursor.execute(

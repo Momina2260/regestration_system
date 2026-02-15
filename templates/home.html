@@ -113,19 +113,19 @@
 
   <div class="courses">
     <div class="card">
-      <a href="url_for('routes.courses/1')">
+      <a href="{{ url_for('routes.courses', id=1) }}">
         <h3>📘 Math 101</h3>
         <p>Introduction to Mathematics and basic problem-solving.</p>
       </a>
     </div>
     <div class="card">
-      <a href="url_for('routes.courses/2')">
+      <a href="{{ url_for('routes.courses', id=2) }}">
         <h3>👩‍💻 Python Programming</h3>
         <p>Learn Python step-by-step and build cool projects.</p>
       </a>
     </div>
     <div class="card">
-      <a href="url_for('routes.courses/3')">
+      <a href="{{ url_for('routes.courses', id=3) }}">
         <h3>🌍 History 101</h3>
         <p>Discover world history and understand key events.</p>
       </a>

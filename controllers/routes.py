@@ -15,7 +15,7 @@ def home():
 @routes.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        return logic.register(
+        return logic.register_user(
             name=request.form.get("name"),
             email=request.form.get("email"),
             password=request.form.get("password"),
