@@ -1,82 +1,102 @@
 import mysql.connector
-from flask import request,session, redirect, url_for, render_template
+import os
+from flask import request,session, redirect, url_for, render_template,flash
 from werkzeug.security import generate_password_hash, check_password_hash
-
+import jwt
+import datetime
 class Logic:
 
     # DB connection
-    def get_db(self):
-        return mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="Root@2003",
-            database="mydatabase"
-        )
+   
 
+    def get_db(self):
+     return mysql.connector.connect(
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME")
+    )
     # ------------------ REGISTER --------------------
     def register_user(self, name, email, password, confirm):
-        if confirm != password:
-            return "Password does not match, try again!"
+     if not name or not email or not password or not confirm:
+        return "All fields are required!"
 
-        hashed_password = generate_password_hash(password)
+     if confirm != password:
+        return "Passwords do not match!"
+     if len(password)<8:
+         return"password should be atleast 8 character !"
+     hashed_password = generate_password_hash(password)
 
-        con = self.get_db()
-        cursor = con.cursor()
+     con = self.get_db()
+     cursor = con.cursor()
 
-        cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
-        if cursor.fetchone():
-            cursor.close()
-            con.close()
-            return "Email already exists!"
-
-        # role logic
-        role = "student"
-        if email == "momina2003.uos@gmail.com":
-            role = "admin"
-        elif email.endswith("@teacher.com"):
-            role = "teacher"
-
-        cursor.execute(
-            "INSERT INTO users (name, email, password, role) VALUES (%s, %s, %s, %s)",
-            (name, email, hashed_password, role)
-        )
-        con.commit()
+     cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
+     if cursor.fetchone():
         cursor.close()
         con.close()
+        return "Email already exists!"
 
-        return redirect(url_for("routes.login"))
+     role = "student"
+     if email == "momina2003.uos@gmail.com":
+        role = "admin"
+     elif email.endswith("@teacher.com"):
+        role = "teacher"
+
+     cursor.execute(
+        "INSERT INTO users (name, email, password, role) VALUES (%s, %s, %s, %s)",
+        (name, email, hashed_password, role)
+     )
+     con.commit()
+     cursor.close()
+     con.close()
+
+     return "success"
 
     # ------------------ LOGIN --------------------
     def login(self, email, password):
-        con = self.get_db()
-        cursor = con.cursor(dictionary=True)
+     con = self.get_db()
+     cursor = con.cursor(dictionary=True)
 
+     cursor.execute(
+        "SELECT user_id, name, email, password, role FROM users WHERE email=%s LIMIT 1",
+        (email,)
+     )
+     user = cursor.fetchone()
+
+     if user and check_password_hash(user["password"], password):
+        # Optional: create token (for API use, not needed for normal session login)
+        payload = {
+            "user_id": user["user_id"],
+            "name": user["name"],
+            "role": user["role"],
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+
+        # Update last login
         cursor.execute(
-            "SELECT user_id, name, email, password, role FROM users WHERE email=%s LIMIT 1",
-            (email,)
+            "UPDATE users SET last_login = NOW() WHERE user_id=%s",
+            (user["user_id"],)
         )
-        user = cursor.fetchone()
+        con.commit()
 
-        if user and check_password_hash(user["password"], password):
-            cursor.execute(
-                "UPDATE users SET last_login = NOW() WHERE user_id=%s",
-                (user["user_id"],)
-            )
-            con.commit()
-
-            session["user_id"] = user["user_id"]
-            session["name"] = user["name"]
-            session["role"] = user["role"]
-
-            cursor.close()
-            con.close()
-            return redirect(url_for("routes.welcome"))
+        # Set session
+        session["user_id"] = user["user_id"]
+        session["name"] = user["name"]
+        session["role"] = user["role"]
 
         cursor.close()
         con.close()
-        return "Invalid credentials!"
 
-    # ------------------ DELETE ACCOUNT --------------------
+        flash("Login successful!", "success")
+        return redirect(url_for("routes.welcome"))
+
+     # Invalid credentials
+     cursor.close()
+     con.close()
+     flash("Invalid email or password!", "danger")
+     return redirect(url_for("routes.login"))
+     # ------------------ DELETE ACCOUNT --------------------
     def delete_account(self):
         con = self.get_db()
         cursor = con.cursor()

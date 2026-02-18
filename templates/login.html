@@ -95,16 +95,24 @@
        .navbar a:hover{
          color:blue ;
        }
-       
-        
+   
+  .flash.success 
+                {
+     color: green;
+      margin-bottom: 10px; }
+
+        .flash.danger { 
+            color: red; margin-bottom: 10px; 
+        }
+
     </style>
 </head>
 <body>
     <div class="hd"><header>
         <nav class="navbar">
             <div>
-                <ul><li><a href="">home</a></li>
-                    <li><a href="">about</a></li>
+                <ul><li><a href="home">home</a></li>
+                    <li><a href="about">about</a></li>
                    <li class="dropdown">
                 <a href="">Services</a>
             </li>
@@ -113,7 +121,17 @@
         </nav>
     </header></div>
     
-    <fieldset>
+    <fieldset> 
+        <!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+
         <form action="" , method="POST">
             <div class="name"><label for="name">Name</label>
             <input type="text" id="name" name="name" placeholder="Please enter your name...">

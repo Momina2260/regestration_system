@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, session
+from flask import Blueprint, render_template, redirect, url_for, request, session,flash
 from services.logic import Logic
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -12,17 +12,28 @@ def home():
 
 
 # --------------------- REGISTER ----------------------
+
+@routes.route("/about")
+def about():
+    return render_template("about.html")
+#----------------------------------------------------
 @routes.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        return logic.register_user(
+        result = logic.register_user(
             name=request.form.get("name"),
             email=request.form.get("email"),
             password=request.form.get("password"),
             confirm=request.form.get("confirm_password")
         )
-    return render_template("register.html")
 
+        if result == "success":
+            flash("Registration successful! Please login.", "success")
+            return redirect(url_for("routes.login"))
+        else:
+            flash(result, "danger")  # show error on the form
+
+    return render_template("register.html")
 
 # --------------------- LOGIN ----------------------
 @routes.route("/login", methods=["GET", "POST"])
