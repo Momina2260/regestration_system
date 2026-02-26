@@ -9,7 +9,7 @@
 
     <form method="POST" action="{{ url_for('routes.enroll', course_id=course.course_id) }}">
         <label>Name:</label><br>
-        <input type="text" name="name" value="{{ session['name'] }}" required><br><br>
+        <input type="text" name="name" value="" required><br><br>
 
         <label>Email:</label><br>
         <input type="email" name="email" required><br><br>

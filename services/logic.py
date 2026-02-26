@@ -88,7 +88,7 @@ class Logic:
      cursor.close()
      con.close()
      flash("Invalid email or password!", "danger")
-     return redirect(url_for("routes.login"))
+     return redirect(url_for('routes.home', login_required=1))
      # ------------------ DELETE ACCOUNT --------------------
     def delete_account(self):
         con = self.get_db()
@@ -190,7 +190,7 @@ class Logic:
     # ------------------ COURSES --------------------
     def courses(self):
         if "user_id" not in session:
-            return redirect(url_for("routes.login"))
+            return redirect(url_for("routes.home"))
 
         con = self.get_db()
         cursor = con.cursor(dictionary=True)

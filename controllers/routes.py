@@ -29,7 +29,7 @@ def register():
 
         if result == "success":
             flash("Registration successful! Please login.", "success")
-            return redirect(url_for("routes.login"))
+            return redirect(url_for("routes.home"))
         else:
             flash(result, "danger")  # show error on the form
 
@@ -50,7 +50,7 @@ def login():
 @routes.route("/delete_account", methods=["GET", "POST"])
 def delete_account():
     if "user_id" not in session:
-        return redirect(url_for("routes.login"))
+        return redirect(url_for("routes.home"))
 
     if request.method == "POST":
         return logic.delete_account()
@@ -69,9 +69,10 @@ def welcome():
 
 # --------------------- PROFILE ----------------------
 @routes.route("/profile")
+@login_required
 def profile():
     if "user_id" not in session:
-        return redirect(url_for("routes.login"))
+        return redirect(url_for("routes.home"))
 
     user = logic.profile()
     enrolled_courses=logic.get_user_enrollments(session["user_id"])
@@ -100,6 +101,7 @@ def enroll(course_id):
 
 # --------------------- COURSES ----------------------
 @routes.route("/courses")
+@login_required
 def courses():
     return logic.courses()
 

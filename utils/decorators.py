@@ -6,6 +6,6 @@ def login_required(f):
     def decorated(*args, **kwargs):
         if "user_id" not in session:
             flash("Please login first", "warning")
-            return redirect(url_for("routes.login"))  # must match blueprint & function name
+            return redirect(url_for('routes.home', login_required=1))  # must match blueprint & function name
         return f(*args, **kwargs)
     return decorated

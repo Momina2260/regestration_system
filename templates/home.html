@@ -9,14 +9,17 @@
       margin: 0;
       padding: 0;
     }
-
+    
     header {
-      background-color: #2563eb;
-      color: white;
-      text-align: center;
-      padding: 20px 0;
-      font-size: 28px;
-      letter-spacing: 1px;
+      
+    background-color: #2563eb;
+    color: white;
+    display: flex;
+    justify-content: space-between; /* left title, right button */
+    align-items: center;
+    padding: 15px 40px;
+    font-size: 24px;
+    letter-spacing: 1px;
     }
 
     .welcome {
@@ -94,20 +97,116 @@
       color: #475569;
       margin-top: 30px;
     }
+    .header-right button {
+    background-color: #1e40af;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.header-right button:hover {
+    background-color: #1e3a8a;
+}
+  
+    /* Modal background */
+
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+}
+
+/* Modal box */
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 30px;
+    width: 350px;
+    border-radius: 12px;
+    text-align: center;
+    animation: slideDown 0.4s ease;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.close {
+    float: right;
+    font-size: 22px;
+    cursor: pointer;
+}
+            label {
+            display: block;
+            margin-top: 10px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            color: rgb(50, 48, 48);
+            background-color: gainsboro;
+            border: none;
+            border-radius: 3px;
+            box-sizing: border-box;
+            border-bottom: 2px solid dimgray;
+           
+        }
+
+        input[type="submit"] {
+            margin-top: 30px;
+            width: 100%;
+            text-align: center;
+            
+            padding: 8px;
+            background-color: steelblue;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: royalblue;
+        }
+  
+
+        .flash.danger { 
+            color: red; margin-bottom: 10px; 
+        }
+     @keyframes slideDown {
+    from { transform: translateY(-40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
   </style>
 </head>
+
 <body>
 
-  <header>🌩️ CourseCloud</header>
+  <header>
+    <div class="header-left">🌩️ CourseCloud</div>
+  <div class="header-right"> <button class="button" onclick="openModal()">login</button></div>
+  </header>
 
   <div class="welcome">
     <h2>Learn Anything. Anywhere. Anytime.</h2>
     <p>Join thousands of learners building their future with CourseCloud.</p>
     <div class="buttons">
       <a href="{{ url_for('routes.register') }}">Register</a>
-      <a href="{{ url_for('routes.login') }}">Login</a>
       <a href="{{ url_for('routes.courses') }}">View All Courses</a>
-
+      
     </div>
   </div>
 
@@ -133,6 +232,62 @@
   </div>
 
   <footer>© 2025 CourseCloud | Made with 💙 by Momina</footer>
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+       <h2>login</h2>
+               <!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
+       <form action="{{ url_for('routes.login') }}" , method="POST">
+            <div class="name"><label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Please enter your name...">
+         </div>
+           <div class="email"> <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Please enter your email..."></div>
+
+            <div class="password">
+                <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Please enter your password...">
+       
+        </div>
+         
+
+        <div class="login">   
+             <input type="submit" value="login">
+            </div>
+        </form>
+    </div>
+  </div>
+  <input type="hidden" id="loginRequired" value="{{ request.args.get('login_required', '') }}">
+  <script>
+function openModal() {
+    document.getElementById("loginModal").style.display = "block";
+}
+
+function closeModal() {
+    document.getElementById("loginModal").style.display = "none";
+}
+
+window.onclick = function(event) {
+    let modal = document.getElementById("loginModal");
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+window.onload = function() {
+    let loginFlag = document.getElementById("loginRequired").value;
+    if (loginFlag === "1") {
+        openModal();
+    }
+}
+</script>
 </body>
 </html>
