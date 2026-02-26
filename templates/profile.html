@@ -1,7 +1,133 @@
-<h2>Welcome, {{ user.name }}</h2>
-<p>Email: {{ user.email }}</p>
-<p><strong>Last Login:</strong> {{ user.last_login if user.last_login else "Never" }}</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Profile</title>
 
-<form action="{{ url_for('routes.delete_account') }}" method="POST">
-    <button type="submit" style="color:red;">Delete My Account</button>
-</form>
+    <style>
+        body{
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url("{{ url_for('static', filename='BG2.jpg') }}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            padding: 40px 0;   /* allow scrolling */
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .profile-card h2 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .info {
+            margin: 15px 0;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .btn-delete {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: crimson;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: darkred;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #764ba2;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        hr {
+            margin: 30px 0;
+        }
+
+        .course-card {
+            background: #f4f4f4;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        .course-card h4 {
+            margin: 0 0 5px 0;
+        }
+
+        .no-course {
+            color: gray;
+            font-style: italic;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="profile-card">
+        <div style="text-align:center;">
+            <div class="badge">User Profile</div>
+            <h2>{{ user.name }}</h2>
+        </div>
+
+        <div class="info">
+            <p><span class="label">Email:</span> {{ user.email }}</p>
+            <p><span class="label">Last Login:</span> 
+                {{ user.last_login if user.last_login else "Never" }}
+            </p>
+        </div>
+
+        <form action="{{ url_for('routes.delete_account') }}" method="POST">
+            <button type="submit" class="btn-delete">
+                Delete My Account
+            </button>
+        </form>
+
+        <hr>
+
+        <h3>📚 My Enrolled Courses</h3>
+
+        {% if enrolled_courses %}
+            {% for course in enrolled_courses %}
+                <div class="course-card">
+                    <h4>{{ course.title }}</h4>
+                    <p>{{ course.description }}</p>
+                    <small>
+                        Enrolled on: {{ course.enrollment_date }}
+                    </small>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-course">
+                You are not enrolled in any courses yet.
+            </p>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

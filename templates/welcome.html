@@ -1,11 +1,110 @@
-<h1>Welcome {{ name }}</h1>
-<p>Your role: {{ role }}</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
 
-<a href="{{ url_for('routes.profile') }}">My Profile</a><br>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+        }
 
-{% if role == "admin" %}
-  <a href="{{ url_for('routes.users_list') }}">See All Users (Admin)</a><br>
-{% endif %}
+        .navbar {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
 
-<a href="{{ url_for('routes.logout') }}">Logout</a><br>
- <a href="/courses">View All Courses</a>
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            font-weight: bold;
+        }
+
+        .container {
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .cards {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            color: black;
+            padding: 25px;
+            width: 220px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card a {
+            text-decoration: none;
+            color: #764ba2;
+            font-weight: bold;
+        }
+
+        .role {
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div><strong>CourseCloud</strong></div>
+        <div>
+            <a href="{{ url_for('routes.profile') }}">Profile</a>
+            <a href="{{ url_for('routes.logout') }}">Logout</a>
+            <a href="{{ url_for('routes.home') }}">home</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Welcome, {{ name }} 👋</h1>
+        <div class="role">you are now here as  {{ role }}</div>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>My Profile</h3>
+                <p>View and update your profile.</p>
+                <a href="{{ url_for('routes.profile') }}">Go →</a>
+            </div>
+
+            <div class="card">
+                <h3>Courses</h3>
+                <p>Explore all available courses.</p>
+                <a href="/courses">View Courses →</a>
+            </div>
+
+            {% if role == "admin" %}
+            <div class="card">
+                <h3>Admin Panel</h3>
+                <p>Manage users and system data.</p>
+                <a href="{{ url_for('routes.admin_dashboard') }}">Open Admin →</a>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+</body>
+</html>

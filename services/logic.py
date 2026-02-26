@@ -1,3 +1,4 @@
+
 import mysql.connector
 import os
 from flask import request,session, redirect, url_for, render_template,flash
@@ -64,23 +65,13 @@ class Logic:
      user = cursor.fetchone()
 
      if user and check_password_hash(user["password"], password):
-        # Optional: create token (for API use, not needed for normal session login)
-        payload = {
-            "user_id": user["user_id"],
-            "name": user["name"],
-            "role": user["role"],
-            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-        }
-        token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 
-        # Update last login
         cursor.execute(
             "UPDATE users SET last_login = NOW() WHERE user_id=%s",
             (user["user_id"],)
         )
         con.commit()
 
-        # Set session
         session["user_id"] = user["user_id"]
         session["name"] = user["name"]
         session["role"] = user["role"]
@@ -89,9 +80,11 @@ class Logic:
         con.close()
 
         flash("Login successful!", "success")
-        return redirect(url_for("routes.welcome"))
+        if user["role"] == "admin":
+            return redirect(url_for("routes.welcome"))
+        else:
+            return redirect(url_for("routes.welcome"))
 
-     # Invalid credentials
      cursor.close()
      con.close()
      flash("Invalid email or password!", "danger")
@@ -100,13 +93,21 @@ class Logic:
     def delete_account(self):
         con = self.get_db()
         cursor = con.cursor()
-        cursor.execute("DELETE FROM users WHERE user_id=%s", (session["user_id"],))
-        con.commit()
-        cursor.close()
-        con.close()
-        session.clear()
-        return redirect(url_for("routes.login"))
-
+        try:
+         cursor.execute("DELETE FROM enrollment WHERE user_id=%s", (session["user_id"],))
+         cursor.execute("DELETE FROM users WHERE user_id=%s", (session["user_id"],))
+         con.commit()
+         cursor.close()
+         con.close()
+         session.clear()
+         return redirect(url_for("routes.home"))
+       
+        except Exception as e:
+         con.rollback()
+         print("Error:", e)
+        finally:
+         cursor.close()
+         con.close()
     # ------------------ PROFILE --------------------
     def profile(self):
         con = self.get_db()
@@ -136,56 +137,56 @@ class Logic:
 
     # ------------------ LOGOUT --------------------
     def logout(self):
-        name = session.get("name", "Guest")
-        session.clear()
-        return render_template("logout.html", name=name)
+     name = session.get("name", "Guest")
+     session.clear()
+     return render_template("logout.html", name=name)
 
     # ------------------ ENROLL --------------------
+  # logic.py
     def enroll(self, course_id):
-        if "user_id" not in session:
-            return redirect(url_for("routes.login"))
+     con = self.get_db()
+     cursor = con.cursor(dictionary=True)
 
-        con = self.get_db()
-        cursor = con.cursor(dictionary=True)
+    # Get course info
+     cursor.execute("SELECT * FROM courses WHERE course_id=%s", (course_id,))
+     course = cursor.fetchone()
 
-        # Get course info
-        cursor.execute("SELECT * FROM courses WHERE course_id=%s", (course_id,))
-        course = cursor.fetchone()
-
-        if not course:
-            cursor.close()
-            con.close()
-            return "Course not found."
-
-        if request.method == "POST":
-            name = request.form.get("name")
-            email = request.form.get("email")
-
-            # Check if already enrolled
-            cursor.execute(
-                "SELECT * FROM Enrollment WHERE user_id=%s AND course_id=%s",
-                (session["user_id"], course_id)
-            )
-            if cursor.fetchone():
-                cursor.close()
-                con.close()
-                return "You are already enrolled in this course!"
-
-            # Insert enrollment
-            cursor.execute(
-                "INSERT INTO Enrollment (user_id, course_id, enrollment_date) VALUES (%s, %s, CURDATE())",
-                (session["user_id"], course_id)
-            )
-            con.commit()
-            cursor.close()
-            con.close()
-
-            return f"Enrollment successful! Welcome, {name}, to {course['title']}."
-
-        # GET request → show confirm page
+     if not course:
         cursor.close()
         con.close()
-        return render_template("confirm_enroll.html", course=course)
+        return "Course not found."
+
+     if request.method == "POST":
+        # user info from session
+        user_id = session["user_id"]
+        name = session.get("name")
+        email = session.get("email")  # optional if needed
+
+        # Check if already enrolled
+        cursor.execute(
+            "SELECT * FROM Enrollment WHERE user_id=%s AND course_id=%s",
+            (user_id, course_id)
+        )
+        if cursor.fetchone():
+            cursor.close()
+            con.close()
+            return "You are already enrolled in this course!"
+
+        # Insert enrollment
+        cursor.execute(
+            "INSERT INTO Enrollment (user_id, course_id, enrollment_date) VALUES (%s, %s, CURDATE())",
+            (user_id, course_id)
+        )
+        con.commit()
+        cursor.close()
+        con.close()
+
+        return f"Enrollment successful! Welcome, {name}, to {course['title']}."
+
+    # GET request → show confirmation page
+     cursor.close()
+     con.close()
+     return render_template("confirm_enroll.html", course=course)
     # ------------------ COURSES --------------------
     def courses(self):
         if "user_id" not in session:
@@ -255,3 +256,18 @@ class Logic:
             courses=courses,
             Enrollment=Enrollment
         )
+    def get_user_enrollments(self,user_id):
+       con = self.get_db()
+       cursor = con.cursor(dictionary=True)
+      
+       query = """
+        SELECT c.title, c.description, e.enrollment_date
+        FROM enrollment e
+        JOIN courses c ON e.course_id = c.course_id
+        WHERE e.user_id = %s
+       """
+       cursor.execute(query,(user_id,))
+       enrollments=cursor.fetchall()
+       cursor.close()
+       con.close()
+       return enrollments

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, session,flash
 from services.logic import Logic
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from utils.decorators import login_required
 routes = Blueprint("routes", __name__)
 logic = Logic()
 
@@ -16,7 +16,7 @@ def home():
 @routes.route("/about")
 def about():
     return render_template("about.html")
-#----------------------------------------------------
+#----------------------register------------------------------
 @routes.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -60,6 +60,7 @@ def delete_account():
 
 # --------------------- WELCOME ----------------------
 @routes.route("/welcome")
+@login_required
 def welcome():
     name = session.get("name", "Guest")
     role = session.get("role", "user")
@@ -73,7 +74,8 @@ def profile():
         return redirect(url_for("routes.login"))
 
     user = logic.profile()
-    return render_template("profile.html", user=user)
+    enrolled_courses=logic.get_user_enrollments(session["user_id"])
+    return render_template("profile.html", user=user,enrolled_courses=enrolled_courses)
 
 
 # --------------------- ADMIN USERS LIST ----------------------
@@ -89,8 +91,8 @@ def logout():
 
 
 # --------------------- ENROLL COURSE ----------------------
-# --------------------- ENROLL COURSE ----------------------
 @routes.route("/enroll/<int:course_id>", methods=["GET", "POST"])
+@login_required
 def enroll(course_id):
     # Call Logic class method
     return logic.enroll(course_id)
@@ -111,5 +113,6 @@ def open_course(course_id):
 
 # --------------------- ADMIN DASHBOARD ----------------------
 @routes.route("/admin")
+@login_required
 def admin_dashboard():
     return logic.admin_dashboard()

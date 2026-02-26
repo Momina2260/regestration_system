@@ -1,3 +1,19 @@
+
+<style>
+body {
+    background-image: url("{{ url_for('static', filename='dashboard.jpg') }}"); 
+    background-size: cover;   
+    background-repeat: no-repeat;    
+    background-position: center;
+    background-attachment: fixed;    
+}
+
+table, h2, h3, p {
+   
+    padding: 8px;
+    border-radius: 6px;
+}
+</style>
 <h2>Admin Dashboard</h2>
 
 <p>Total Users: {{ total_users }}</p>
