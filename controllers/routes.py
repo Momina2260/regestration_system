@@ -11,7 +11,7 @@ def home():
     return render_template("home.html")
 
 
-# --------------------- REGISTER ----------------------
+# --------------------- about----------------------
 
 @routes.route("/about")
 def about():
@@ -24,14 +24,15 @@ def register():
             name=request.form.get("name"),
             email=request.form.get("email"),
             password=request.form.get("password"),
-            confirm=request.form.get("confirm_password")
+            confirm=request.form.get("confirm_password"),
+           role=request.form.get("role"),
         )
 
         if result == "success":
             flash("Registration successful! Please login.", "success")
             return redirect(url_for("routes.home"))
         else:
-            flash(result, "danger")  # show error on the form
+            flash(result, "danger") 
 
     return render_template("register.html")
 
@@ -40,6 +41,7 @@ def register():
 def login():
     if request.method == "POST":
         return logic.login(
+            name=request.form.get("name"),
             email=request.form.get("email"),
             password=request.form.get("password")
         )

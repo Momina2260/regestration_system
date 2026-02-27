@@ -34,7 +34,7 @@
             margin-top: 10px;
         }
 
-        input[type="text"], input[type="email"], input[type="password"],input[type="confirm_pasword"] {
+        input[type="text"], input[type="email"], input[type="password"],input[type="confirm_pasword"] ,input[type="text"]{
             width: 100%;
             padding: 8px;
             color: rgb(50, 48, 48);
@@ -103,14 +103,20 @@
          color:blue ;
        }
        .actions {
-    margin-top: 30px;
+    margin-top: 10px;
     display: flex;
-    justify-content: space-between; /* pushes buttons apart */
-    gap: 10px; /* space between buttons */
-}
+       }
 
-.actions input[type="submit"] {
-    flex: 1; /* makes both buttons same width */
+
+
+.role{
+    margin-top:10px ;
+    display: flex;
+    justify-content: space-between;
+    gap:10px ;
+}
+.role input [type="submit"]{
+    flex:1;
 }
 
 .flash.success { color: green; margin-bottom: 10px; }
@@ -163,8 +169,17 @@
             <label for="confirm-password">Confirm Password</label>
             <input type="password" id="confirm-password" name="confirm_password" placeholder="Please confirm your password...">
         </div>
-
-        <!-- Both buttons side by side -->
+        <div class="role">
+              <div>Role:
+            </div>
+             <div>
+            <input type="radio" name="role" value="teacher" required>teacher
+        </div>
+          <div>
+        
+            <input type="radio" name="role" value="student" required>student
+        </div>
+        </div>
         <div class="actions">
             <input type="submit" name ="action" value="Register">
             

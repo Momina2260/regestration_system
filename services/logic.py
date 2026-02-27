@@ -18,8 +18,8 @@ class Logic:
         database=os.getenv("DB_NAME")
     )
     # ------------------ REGISTER --------------------
-    def register_user(self, name, email, password, confirm):
-     if not name or not email or not password or not confirm:
+    def register_user(self, name, email, password, confirm,role):
+     if not name or not email or not password or not confirm or not role:
         return "All fields are required!"
 
      if confirm != password:
@@ -30,19 +30,22 @@ class Logic:
 
      con = self.get_db()
      cursor = con.cursor()
-
+     cursor.execute("SELECT * FROM users WHERE name=%s",(name,))
+     if cursor.fetchone()is not None:
+        cursor.close()
+        con.close()
+        return "username already exist please select diffrent!"
      cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
      if cursor.fetchone():
         cursor.close()
         con.close()
         return "Email already exists!"
-
-     role = "student"
      if email == "momina2003.uos@gmail.com":
         role = "admin"
-     elif email.endswith("@teacher.com"):
-        role = "teacher"
 
+     if role not in ["admin","student","teacher"]:
+        return "invalid role!"
+      
      cursor.execute(
         "INSERT INTO users (name, email, password, role) VALUES (%s, %s, %s, %s)",
         (name, email, hashed_password, role)
@@ -54,13 +57,18 @@ class Logic:
      return "success"
 
     # ------------------ LOGIN --------------------
-    def login(self, email, password):
+    def login(self, name,email, password):
      con = self.get_db()
      cursor = con.cursor(dictionary=True)
 
      cursor.execute(
         "SELECT user_id, name, email, password, role FROM users WHERE email=%s LIMIT 1",
         (email,)
+     )
+     user = cursor.fetchone()
+     cursor.execute(
+        "SELECT user_id, name, email, password, role FROM users WHERE email=%s LIMIT 1",
+        (name,)
      )
      user = cursor.fetchone()
 

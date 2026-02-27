@@ -6,17 +6,13 @@
     <title>logout</title>
     <style>  
      body {
-             background-image: url("{{ url_for('static', filename='BG4.jpg') }}"); /* Make sure BG.jpg is in the same folder as this HTML file */
-             background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 100%,100%;
-            min-height: 100vh; 
-            align-items:flex-start;
-            padding: 40px;
+        
+        background-color:whitesmoke;
+            padding:0px;
+            margin: 0px;
         }
         h1{
-            color: aliceblue;
+            color: rgb(34, 47, 59);
             font-family: Arial, Helvetica, sans-serif;
             
      
@@ -35,8 +31,9 @@
         }
      
         .navbar {
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
+            background:rgb(103, 139, 192);
+            padding: 0px;
+            height: 80px;
             display: flex;
             justify-content: space-between;
         }
@@ -46,6 +43,7 @@
             text-decoration: none;
             margin-left: 15px;
             font-weight: bold;
+          
         }
 
       
@@ -53,14 +51,15 @@
         </style>
 </head>
 <body>
-<h1>you loged out sucessfully!{{ name }}</h1>
+
 
 <div class="navbar">
-        <div><strong>CourseCloud</strong></div>
+        <div><strong><h2>CourseCloud</h2></strong></div>
         <div>
-            <a href="{{ url_for('routes.home') }}">home</a>
+            <a href="{{ url_for('routes.home') }}"><h2>home</h2></a>
      
         </div>
+        
     </div>
-
+   <h1>you loged out sucessfully!{{ name }}</h1>
 </body>
